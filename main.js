@@ -1,20 +1,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js';
 import { getDatabase, ref, set, onValue, get } from 'https://www.gstatic.com/firebasejs/9.1.3/firebase-database.js';
-import { getAuth, 
-         createUserWithEmailAndPassword, 
-         signInWithEmailAndPassword, 
-         GoogleAuthProvider,
-         signInWithPopup,
-         onAuthStateChanged,
-         signOut } from 'https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js';
 const firebaseConfig = {
-  apiKey: "AIzaSyAYjLbsdGgVccTHa_bpEaDh7orYmzldiMk",
-  authDomain: "stewflandic-permission-system.firebaseapp.com",
-  databaseURL: "https://stewflandic-permission-system-default-rtdb.firebaseio.com",
-  projectId: "stewflandic-permission-system",
-  storageBucket: "stewflandic-permission-system.firebasestorage.app",
-  messagingSenderId: "1035943934052",
-  appId: "1:1035943934052:web:d3b8c6802c9a99ec81c771"
+  
 };
 
 // Initialize Firebase
