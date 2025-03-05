@@ -1,5 +1,5 @@
 {
-  "name": "sps",
+  "name": "spin",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "vite": "^6.0.5"
+    "vite": "^6.2.0"
   },
   "dependencies": {
     "firebase": "^11.2.0"
