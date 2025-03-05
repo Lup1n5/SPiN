@@ -1,7 +1,12 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js';
 import { getDatabase, ref, set, onValue, get } from 'https://www.gstatic.com/firebasejs/9.1.3/firebase-database.js';
 const firebaseConfig = {
-  
+  apiKey: "AIzaSyD68PbyrHLGNYf9Kg_Xb_XKiKegz-Kov7k",
+    authDomain: "spin-a3d5a.firebaseapp.com",
+    projectId: "spin-a3d5a",
+    storageBucket: "spin-a3d5a.firebasestorage.app",
+    messagingSenderId: "423644329992",
+    appId: "1:423644329992:web:9c14f1c959b8db636639bd"
 };
 
 // Initialize Firebase
