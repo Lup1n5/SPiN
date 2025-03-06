@@ -11,118 +11,38 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth();
 const db = getDatabase(app);
 
 const loggedInView = document.getElementById('logged-in-view')
 const loggedOutView = document.getElementById('logged-out-view')
-const userEmail = document.getElementById('user-email')
-const emailSignInForm = document.getElementById('signin-email-input')
-const passwordSignInForm = document.getElementById('signin-password-input')
+const usernameSignInForm = document.getElementById('signin-email-input')
 const loginBtn = document.getElementById('sign-in-btn')
 const logoutBtn = document.getElementById('logout-button')
 const chatMessages = document.querySelector('.chat-messages')
-const chatInputForm = document.querySelector('.chat-input-form')
 const chatInput = document.querySelector('.chat-input')
 const sendBtn = document.querySelector(".send-button")
-var messageSender = ''
-var email = ""
-let uid = '';
+let user = '';
 let isMuted = 0;
 function logout() {
   let timestamp = new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
   let message = {
     sender: "Server",
-    text: `${messageSender} has disconnected.`,
+    text: `${user} has disconnected.`,
     timestamp,
   }
-  const messageRef = ref(db,`messages/${uid}`)
+  const messageRef = ref(db,`messages/${user}`)
   set(messageRef,message)
   for (var i = 0; i<chatMessages.childElementCount; i++) { 
     chatMessages.removeChild(chatMessages.firstChild); 
   }
-    signOut(auth).then(() => {
-      // Sign-out successful.
-    }).catch((error) => {
-      // An error happened.
-    });
-    location.reload()
+    loggedInView.style.display = 'none' 
+      loggedOutView.style.display = 'block'
   
 }
 
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-      uid = user.uid;
-      email = user.email
-      //console.log(email)
-      loggedInView.style.display = 'block'
-      userEmail.innerText = email
-      emailSignInForm.value = ""
-      passwordSignInForm.value = ""
-      loggedOutView.style.display = 'none'
-      messageSender = email
-      const refage = ref(db, `pings/${uid}`)
-      const refag = ref(db, `users/${uid}`)
-      set(refag, email)
-      let timestamp = new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
-  let message = {
-    sender: "Server",
-    text: `${messageSender} has connected.`,
-    timestamp,
-  }
-  const messageRef = ref(db,`messages/${uid}`)
-  set(messageRef,message)
-      get(refage).then((snapshot) =>{
-        if (!snapshot.val()) {
-          set(refage, 'x')
-        }
-      })
-      const pingPong = ref(db, `pings`)
-onValue(pingPong,(snapshot) =>{
-  const snapp = snapshot.val()
-  if (snapp[uid] =='pinging' && document.visibilityState === 'hidden') {
-  const pingRef = ref(db, `pings/${uid}`)
-    set(pingRef, 'recieved')
-}})
 
-const allmessages = ref(db, "messages")
-get(allmessages).then((snapshot) =>{
-  Object.keys(snapshot.val()).forEach((poop) => {
-    const userRef = ref(db, `messages/${poop}/text`)
-    onValue(userRef, () =>{
-  const reef = ref(db, `messages/${poop}`)
-  get(reef).then((snapshot) =>{
-    let snap = snapshot.val()
-    if (snap.sender != messageSender) {
-    createChatMessageElement(snap)
-    } 
-
-  })
-})
-
-  });
-})
-    } else {
-      // User is signed out
-      loggedInView.style.display = 'none' 
-      loggedOutView.style.display = 'block'
-       
-    }
-  });
-loginBtn.addEventListener('click', () => {
-    signInWithEmailAndPassword(auth, emailSignInForm.value, passwordSignInForm.value)
-        .then((userCredential) => {
-            // Signed in 
-            const user = userCredential.user;
-            //console.log(user)
-            // ...
-        })
-        .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            //console.log(errorMessage)
+loginBtn.addEventListener('click', () => {    
             passwordSignInForm.value = ""
-        });
   })
 passwordSignInForm.addEventListener("keypress", function(event) {
   if (event.key === "Enter") {
@@ -138,7 +58,7 @@ const createChatMessageElement = (message) => {
   let time1 = timestamp.replace(/[:APM]/g, ""); 
   let time2 = message.timestamp.replace(/[:APM]/g, ""); 
   if (Math.abs(Number(time2)-Number(time1)) <2) {
-newMessage.innerHTML = `<div class="message ${message.sender === messageSender ? 'blue-bg' : message.text.includes('@'+messageSender.replace("@providenceday.org",'')) == true ? 'yello-bg' : 'gray-bg'}">
+newMessage.innerHTML = `<div class="message ${message.sender === user ? 'blue-bg' : message.text.includes('@'+user) == true ? 'yello-bg' : 'gray-bg'}">
   <div class="message-sender">${message.timestamp}:          ${message.sender}</div>
   <div class="message-text">${message.text}</div>
   </div>`;
@@ -150,12 +70,12 @@ sendBtn.addEventListener('click', () => {
   if (chatInput.value !="/tab") {
   let timestamp = new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
   let message = {
-    sender: messageSender,
+    sender: user,
     text: chatInput.value,
     timestamp,
   }
   if (message.text) {
-  const messageRef = ref(db,`messages/${uid}`)
+  const messageRef = ref(db,`messages/${user}`)
   if (isMuted !=1){
   set(messageRef,message)
   const counterRef = ref(db,'messageCount')
@@ -204,7 +124,7 @@ sendBtn.addEventListener('click', () => {
         text: `${snapshot.val()} is online.`,
         timestamp,
       }
-      if (snapshot.val() !=messageSender) {
+      if (snapshot.val() !=user) {
       createChatMessageElement(message);  
       }
         })
