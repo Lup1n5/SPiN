@@ -42,9 +42,9 @@ function logout() {
 
 
 loginBtn.addEventListener('click', () => {    
-            passwordSignInForm.value = ""
+            usernameSignInForm.value = ""
   })
-passwordSignInForm.addEventListener("keypress", function(event) {
+usernameSignInForm.addEventListener("keypress", function(event) {
   if (event.key === "Enter") {
     event.preventDefault();
     loginBtn.click();
