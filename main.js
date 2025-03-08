@@ -13,6 +13,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+const usernameDisplay = document.getElementById('user-name')
 const loggedInView = document.getElementById('logged-in-view')
 const loggedOutView = document.getElementById('logged-out-view')
 const usernameSignInForm = document.getElementById('signin-email-input')
@@ -35,14 +36,93 @@ function logout() {
   for (var i = 0; i<chatMessages.childElementCount; i++) { 
     chatMessages.removeChild(chatMessages.firstChild); 
   }
+  setTimeout(function(){
+    const messageRef = ref(db,`messages/${user}`)
+    set(messageRef, null)
+    const pingsRef = ref(db,`pings/${user}`)
+    set(pingsRef, null)
+    const usersRef = ref(db,`users/${user}`)
+    set(usersRef, null)
+  }, 100);
     loggedInView.style.display = 'none' 
-      loggedOutView.style.display = 'block'
-  
+    loggedOutView.style.display = 'block'
+  location.reload(true);
+}
+function checkAdmPings() {
+  const adminPingsRef = ref(db,`admpings/${user}`)
+  get(adminPingsRef).then((snapshot) => {
+    switch (snapshot.val()) {
+      case 'mute'||'muted':
+      set(adminPingsRef, 'muted')
+      return true;
+      case 'unmute':
+      set(adminPingsRef, 'unmuted')
+      return false;
+      case 'kick':
+      set(adminPingsRef, 'recieved')
+      logout();
+      break;
+      case 'ban'||'banned':
+      set(adminPingsRef, 'banned')
+      logout();
+      break;
+      default:
+      return false;
+    }
+  })
+}
+function login(username) {
+  user = username;
+  usernameDisplay.innerText = user
+  let timestamp = new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+  let message = {
+    sender: "Server",
+    text: `${user} has connected.`,
+    timestamp,
+  }
+  const messageRef = ref(db,`messages/${user}`)
+  set(messageRef,message);
+  const pingsRef = ref(db,`pings/${user}`)
+  set(pingsRef, 'idle')
+  onValue(pingsRef, (snapshot) => {
+    switch (snapshot.val()) {
+      case 'pinging':
+      set(pingsRef, 'recieved')
+      break; //dont ask me why this is here rather than just setting it to recieved, i dont know
+    }
+  })
+  const adminPingsRef = ref(db,`admpings/${user}`)
+  onValue(adminPingsRef, () => {
+    checkAdmPings();
+  })
+  const usersRef = ref(db,`users/${user}`)
+  set(usersRef, user)
+  const allmessages = ref(db, "messages")
+get(allmessages).then((snapshot) =>{
+  Object.keys(snapshot.val()).forEach((poop) => {
+    const userRef = ref(db, `messages/${poop}/text`)
+    onValue(userRef, () =>{
+  const reef = ref(db, `messages/${poop}`)
+  get(reef).then((snapshot) =>{
+    let snap = snapshot.val()
+    if (snap.sender != user) {
+    createChatMessageElement(snap)
+    } 
+
+  })
+})
+
+  });
+})
+  loggedOutView.style.display = 'none' 
+  loggedInView.style.display = 'block'
 }
 
 
+
 loginBtn.addEventListener('click', () => {    
-            usernameSignInForm.value = ""
+  login('"' + usernameSignInForm.value.replaceAll('"', '') + '"')
+  usernameSignInForm.value = ""
   })
 usernameSignInForm.addEventListener("keypress", function(event) {
   if (event.key === "Enter") {
@@ -59,7 +139,7 @@ const createChatMessageElement = (message) => {
   let time2 = message.timestamp.replace(/[:APM]/g, ""); 
   if (Math.abs(Number(time2)-Number(time1)) <2) {
 newMessage.innerHTML = `<div class="message ${message.sender === user ? 'blue-bg' : message.text.includes('@'+user) == true ? 'yello-bg' : 'gray-bg'}">
-  <div class="message-sender">${message.timestamp}:          ${message.sender}</div>
+  <div class="message-sender">${message.timestamp}:          ${message.sender.replaceAll('"','')}</div>
   <div class="message-text">${message.text}</div>
   </div>`;
 chatMessages.appendChild(newMessage);
@@ -76,7 +156,7 @@ sendBtn.addEventListener('click', () => {
   }
   if (message.text) {
   const messageRef = ref(db,`messages/${user}`)
-  if (isMuted !=1){
+  if (!checkAdmPings()){
   set(messageRef,message)
   const counterRef = ref(db,'messageCount')
   get(counterRef).then((DataSnapshot) => {
@@ -130,6 +210,11 @@ sendBtn.addEventListener('click', () => {
         })
       })
         })
+      output.forEach((snap)=>{
+        const refage = ref(db, `pings/${snap}`)
+        set(refage, 'idle');
+      }
+      )
     }, 1000);
   })
    
