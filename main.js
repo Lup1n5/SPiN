@@ -23,7 +23,7 @@ const chatMessages = document.querySelector('.chat-messages')
 const chatInput = document.querySelector('.chat-input')
 const sendBtn = document.querySelector(".send-button")
 let user = '';
-let isMuted = 0;
+let blocker = 1;
 function logout() {
   let timestamp = new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
   let message = {
@@ -72,6 +72,7 @@ function checkAdmPings() {
   })
 }
 function login(username) {
+  const userCountRef = ref(db, 'userCount')
   user = username;
   usernameDisplay.innerText = user
   let timestamp = new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
@@ -97,23 +98,28 @@ function login(username) {
   })
   const usersRef = ref(db,`users/${user}`)
   set(usersRef, user)
+  get(userCountRef).then((DataSnapshot) => {
+    set(userCountRef,DataSnapshot.val()+1)
+  })
   const allmessages = ref(db, "messages")
-get(allmessages).then((snapshot) =>{
+  onValue(userCountRef, () => {
+  blocker = 1;
+  get(allmessages).then((snapshot) =>{
   Object.keys(snapshot.val()).forEach((poop) => {
     const userRef = ref(db, `messages/${poop}/text`)
     onValue(userRef, () =>{
   const reef = ref(db, `messages/${poop}`)
   get(reef).then((snapshot) =>{
     let snap = snapshot.val()
-    if (snap.sender != user) {
+    if (snap.sender != user&&blocker != 1) {
     createChatMessageElement(snap)
-    } 
-
+    }
   })
 })
 
   });
-})
+}) 
+blocker = 0;})
   loggedOutView.style.display = 'none' 
   loggedInView.style.display = 'block'
 }
