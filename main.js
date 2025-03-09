@@ -83,6 +83,7 @@ function login(username) {
   }
   const messageRef = ref(db,`messages/${user}`)
   set(messageRef,message);
+  createChatMessageElement(message);
   const pingsRef = ref(db,`pings/${user}`)
   set(pingsRef, 'idle')
   onValue(pingsRef, (snapshot) => {
@@ -111,7 +112,7 @@ function login(username) {
   const reef = ref(db, `messages/${poop}`)
   get(reef).then((snapshot) =>{
     let snap = snapshot.val()
-    if (snap.sender != user&&blocker != 1) {
+    if (snap.sender != user&& snap.text!=`${user} has connected.`&&blocker != 1) {
     createChatMessageElement(snap)
     }
   })
