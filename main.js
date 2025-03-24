@@ -28,7 +28,7 @@ const userCountRef = ref(db, 'userCount'); // Move userCountRef to global scope
 const allmessages = ref(db, "messages"); // Move allmessages to global scope
 
 function logout() {
-  let timestamp = new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+  let timestamp = new Date().toLocaleString('en-US', { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true });
   let message = {
     sender: "Server",
     text: `${user} has disconnected.`,
@@ -79,7 +79,7 @@ function login(username) {
   let firstTraker = 1;
   user = username;
   usernameDisplay.innerText = user;
-  let timestamp = new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+  let timestamp = new Date().toLocaleString('en-US', { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true });
   let message = {
     sender: "Server",
     text: `${user} has connected.`,
@@ -107,7 +107,9 @@ function login(username) {
   get(userCountRef).then((DataSnapshot) => {
     set(userCountRef, DataSnapshot.val() + 1);
   });
+
   let messageListeners = {}; // Store active listeners for each message
+  let initialized = false; // Track if the listener is being initialized
 
   onValue(userCountRef, () => {
     // Remove all existing listeners for messages
@@ -126,7 +128,7 @@ function login(username) {
           const userRef = ref(db, `messages/${poop}/text`);
           if (!messageListeners[poop]) {
             messageListeners[poop] = onValue(userRef, (userSnapshot) => {
-              if (userSnapshot.exists()) {
+              if (userSnapshot.exists() && initialized) {
                 const reef = ref(db, `messages/${poop}`);
                 get(reef).then((messageSnapshot) => {
                   if (messageSnapshot.exists()) {
@@ -146,8 +148,10 @@ function login(username) {
           }
         });
       }
+      initialized = true; // Mark the listener as initialized after the first run
     });
   });
+
   loggedOutView.style.display = 'none';
   loggedInView.style.display = 'block';
   firstTraker = 0;
@@ -179,23 +183,18 @@ const createChatMessageElement = (message) => {
 
   const newMessage = document.createElement("div");
   newMessage.setAttribute("data-message-id", message.id); // Add unique identifier to the DOM element
-  let timestamp = new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
-  let time1 = timestamp.replace(/[:APM]/g, "");
-  let time2 = message.timestamp.replace(/[:APM]/g, "");
-  if (Math.abs(Number(time2) - Number(time1)) < 2) {
     newMessage.innerHTML = `<div class="message ${message.sender === user ? 'blue-bg' : message.text.replace('"', '').includes('@' + user.replaceAll('"','')) ? 'yello-bg' : 'gray-bg'}">
       <div class="message-sender">${message.timestamp}: ${message.sender.replaceAll('"', '')}</div>
       <div class="message-text">${message.text}</div>
     </div>`;
     chatMessages.appendChild(newMessage);
     chatMessages.scrollTop = chatMessages.scrollHeight;
-  }
 };
 
 // Modify the send button click handler to include a unique ID for each message
 sendBtn.addEventListener('click', () => {
   if (chatInput.value !== "/tab") {
-    let timestamp = new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+    let timestamp = new Date().toLocaleString('en-US', { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true });
     let message = {
       sender: user,
       text: chatInput.value,
@@ -235,7 +234,7 @@ sendBtn.addEventListener('click', () => {
             }
           }
           if (output.length === 0) {
-            let timestamp = new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+            let timestamp = new Date().toLocaleString('en-US', { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true });
             let message = {
               sender: 'TABLIST',
               text: `Nobody is online.`,
@@ -247,7 +246,7 @@ sendBtn.addEventListener('click', () => {
             output.forEach((snap) => {
               const refage = ref(db, `users/${snap}`);
               get(refage).then((snapshot) => {
-                let timestamp = new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+                let timestamp = new Date().toLocaleString('en-US', { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true });
                 let message = {
                   sender: 'TABLIST',
                   text: `${snapshot.val()} is online.`,
