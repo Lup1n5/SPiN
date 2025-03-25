@@ -37,8 +37,9 @@ function logout() {
   }
   const messageRef = ref(db,`messages/${user}`)
   set(messageRef,message)
-  for (var i = 0; i<chatMessages.childElementCount; i++) { 
-    chatMessages.removeChild(chatMessages.firstChild); 
+  while (chatMessages.childElementCount !=0) { 
+    chatMessages.removeChild(chatMessages.firstElementChild); 
+    chatMessages.remove(chatMessages.firstElementChild)
   }
   setTimeout(function(){
     const messageRef = ref(db,`messages/${user}`)
@@ -76,7 +77,6 @@ function checkAdmPings() {
   })
 }
 function login(username) {
-  let firstTraker = 1;
   user = username;
   usernameDisplay.innerText = user;
   let timestamp = new Date().toLocaleString('en-US', { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true });
@@ -148,13 +148,15 @@ function login(username) {
           }
         });
       }
-      initialized = true; // Mark the listener as initialized after the first run
     });
-  });
+  })
+  setTimeout(() => {
+    initialized = true;
+  }
+  , 100);
 
   loggedOutView.style.display = 'none';
   loggedInView.style.display = 'block';
-  firstTraker = 0;
 }
 
 
