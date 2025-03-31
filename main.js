@@ -162,9 +162,18 @@ function login(username) {
 
 
 loginBtn.addEventListener('click', () => {    
-  login('"' + usernameSignInForm.value.replaceAll('"', '') + '"')
-  usernameSignInForm.value = ""
-  })
+  const username = '"' + usernameSignInForm.value.replaceAll('"', '') + '"';
+  const usersRef = ref(db, 'users');
+
+  get(usersRef).then((snapshot) => {
+    if (snapshot.exists() && Object.values(snapshot.val()).includes(username)) {
+      alert('Username is already in use. Please choose a different username.');
+    } else {
+      login(username);
+    }
+  });
+  usernameSignInForm.value = "";
+});
 usernameSignInForm.addEventListener("keypress", function(event) {
   if (event.key === "Enter") {
     event.preventDefault();
