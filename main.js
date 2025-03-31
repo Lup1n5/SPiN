@@ -48,10 +48,10 @@ function logout() {
     set(pingsRef, null)
     const usersRef = ref(db,`users/${user}`)
     set(usersRef, null)
-  }, 100);
+  }, 100).then(() => {location.reload(true);})
     loggedInView.style.display = 'none' 
     loggedOutView.style.display = 'block'
-  location.reload(true);
+  
 }
 function checkAdmPings() {
   const adminPingsRef = ref(db,`admpings/${user}`)
@@ -244,7 +244,7 @@ sendBtn.addEventListener('click', () => {
               output.push(ids[i]);
             }
           }
-          if (output.length === 0) {
+          if (output.length <= 1) {
             let timestamp = new Date().toLocaleString('en-US', { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true });
             let message = {
               sender: 'TABLIST',
