@@ -48,9 +48,11 @@ function logout() {
     set(pingsRef, null)
     const usersRef = ref(db,`users/${user}`)
     set(usersRef, null)
-  }, 100).then(() => {location.reload(true);})
+  }, 100).then(() => {location.reload(true);
     loggedInView.style.display = 'none' 
     loggedOutView.style.display = 'block'
+  })
+    
   
 }
 function checkAdmPings() {
