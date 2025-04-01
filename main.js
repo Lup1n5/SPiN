@@ -164,14 +164,30 @@ function login(username) {
   loggedInView.style.display = 'block';
 }
 
-
+// Add event listener to handle tab close
+window.addEventListener('beforeunload', (event) => {
+  logout();
+  // Safari requires a returnValue to be set for the event
+  event.returnValue = '';
+});
 
 loginBtn.addEventListener('click', () => {    
-  const username = '"' + usernameSignInForm.value.replaceAll('"', '') + '"';
+  const username = usernameSignInForm.value.replaceAll('"', '').replaceAll(' ','').replaceAll('‎', '');
+  if (username === "") {
+    alert('Please enter a username.');
+    return;
+  } else if (username.length > 20) {
+    alert('Username is too long. Please choose a shorter username.');
+    return;
+  } else if (username.length < 3) {
+    alert('Username is too short. Please choose a longer username.');
+    return;
+  }
+  username = '"' + username + '"';
   const usersRef = ref(db, 'users');
 
   get(usersRef).then((snapshot) => {
-    if (snapshot.exists() && Object.values(snapshot.val()).includes(username)) {
+    if (snapshot.exists() && Object.values(snapshot.val()).includes(username.replaceAll('"', ''))) {
       alert('Username is already in use. Please choose a different username.');
     } else {
       login(username);

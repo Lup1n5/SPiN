@@ -19,7 +19,7 @@
                                 <h2>Login</h2>
                                 <div class="input-group">
                                     <!-- <div id="email-error-message" class="error-msg">No ",.)(/\@_"</div> -->
-                                    <input type="email" id="signin-email-input" name="email" placeholder="Enter username..." required>
+                                    <input type="email" id="signin-email-input" name="email" placeholder="Enter username..." required maxlength="20">
                                 </div>
                                 <div id="sign-in-btn" class="login-btn">Connect</div>
                             </div>
@@ -30,7 +30,7 @@
                 <div class="chat-container">
                     <div class="chat-messages"></div>
                     <div class="chat-input-form">
-                      <input type="text" class="chat-input" required placeholder="Type here..."/>
+                      <input type="text" class="chat-input" required placeholder="Type here..." maxlength="200"/>
                       <button class="button send-button">Send</button>
                     </div>
                   </div>
@@ -42,4 +42,4 @@
         </div>
     </main>
 </body>
-</html> 
+</html>
