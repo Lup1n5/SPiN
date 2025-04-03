@@ -183,14 +183,14 @@ loginBtn.addEventListener('click', () => {
     alert('Username is too short. Please choose a longer username.');
     return;
   }
-  username = '"' + username + '"';
+  // Remove the line that wraps the username in quotes
   const usersRef = ref(db, 'users');
 
   get(usersRef).then((snapshot) => {
-    if (snapshot.exists() && Object.values(snapshot.val()).includes(username.replaceAll('"', ''))) {
+    if (snapshot.exists() && Object.values(snapshot.val()).includes(username)) { // Remove unnecessary .replaceAll('"', '')
       alert('Username is already in use. Please choose a different username.');
     } else {
-      login(username);
+      login(username); // Pass the username directly
     }
   });
   usernameSignInForm.value = "";
