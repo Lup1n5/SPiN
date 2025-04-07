@@ -58,7 +58,7 @@ function logout() {
     
   
 }
-function checkAdmPings() {
+const checkAdmPings = () => {
   const adminPingsRef = ref(db,`admpings/${user}`)
   get(adminPingsRef).then((snapshot) => {
     switch (snapshot.val()) {
