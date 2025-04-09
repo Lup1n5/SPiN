@@ -212,7 +212,9 @@ const createChatMessageElement = (message) => {
   if (document.querySelector(`[data-message-id="${message.id}"]`)) {
     return; // Do not create a duplicate message element
   }
-
+  if (message.timestamp.getTime() < Date.now() - 1000 * 60) {
+    return
+  }
   const newMessage = document.createElement("div");
   newMessage.setAttribute("data-message-id", message.id); // Add unique identifier to the DOM element
     newMessage.innerHTML = `<div class="message ${message.sender === user ? 'blue-bg' : message.text.replace('"', '').includes('@' + user.replaceAll('"','')) ? 'yello-bg' : 'gray-bg'}">
