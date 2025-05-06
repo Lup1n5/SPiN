@@ -212,7 +212,7 @@ const createChatMessageElement = (message) => {
   if (document.querySelector(`[data-message-id="${message.id}"]`)) {
     return; // Do not create a duplicate message element
   }
-  if (message.timestamp.getTime() < Date.now() - 1000 * 60) {
+  if (new Date(message.timestamp) < Date.now()- 60000 ) { 
     return
   }
   const newMessage = document.createElement("div");
@@ -264,10 +264,13 @@ sendBtn.addEventListener('click', () => {
           const vals = Object.values(snapshot.val());
           for (var i = 0; i < ids.length; i++) {
             if (vals[i] == 'recieved') {
-              output.push(ids[i]);
+              if (ids[i] != null) {
+                output.push(ids[i]);
+              }
+              
             }
           }
-          if (output.length <= 1) {
+          if (output.length < 2) {
             let timestamp = new Date().toLocaleString('en-US', { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true });
             let message = {
               sender: 'TABLIST',
